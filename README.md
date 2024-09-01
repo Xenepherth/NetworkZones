@@ -18,6 +18,7 @@ Usage Guide:
 * Add DontDestroyOnLoad component to:
   * Canvas
   * MinimapCamera (because Canvas/Minimap references it)
+  * Network Manager
 * Save scene, select scene in Project Area, duplicate via ctrl+d
   * rename new scene to 'World2'
   * go to File->Build Settings and add World2
