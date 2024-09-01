@@ -3,7 +3,7 @@
 
 
 
-NetworkZones for uMMORPG by vis2k
+NetworkZones for uMMORPG by vis2k Reworked by Xenepherth
 
 --------------------------------------------------------------------------------
 Usage Guide:
