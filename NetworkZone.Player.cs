@@ -13,7 +13,7 @@ public partial class Player
     {
         
         Database.singleton.CharacterSave(this, false);
-        Database.SaveCharacterScenePath(this.name, scene.mapScene);
+        Database.singleton.SaveCharacterScenePath(this.name, scene.mapScene);
 
         player.transform.position = scene.position;  
 
