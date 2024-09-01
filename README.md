@@ -13,11 +13,8 @@ Usage Guide:
 * Add NetworkZone component to NetworkManager
   * assign the public components by dragging networkmanager's components into it
   * add [your-path-here]/World2.unity to scene paths to spawn
-* Create a GameObject->3D->Cylinder for the portal, place it somewhere in the scene
-  (for uMMORPG 2D just add a portal-like sprite with a 2D collider)
-  * enable 'Is Trigger' in the Collider
-  * add NetworkZonePortal component to it
-  * change ScenePath to path to [your-path-here]/World2.unity
+* Add NetworkZonePortal component to your Scene for teleport
+* In NetworkManagerMMO do inactive Don't Destroy On Load
 * Add DontDestroyOnLoad component to:
   * Canvas
   * MinimapCamera (because Canvas/Minimap references it)
