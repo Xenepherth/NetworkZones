@@ -184,7 +184,7 @@ public class NetworkZone : MonoBehaviour
         int index = ParseSceneIndexFromArgs();
 
         // Server
-        if (NetworkServer.active && scenesToSpawn[index].ScenePath == scene.path)
+        if (NetworkServer.active && scenesToSpawn[index] == scene.path)
         {
             // write online time every few seconds and check main zone alive every few seconds
             print("[Zones]: starting online alive check for zone: " + scene.name);
