@@ -20,7 +20,6 @@ Usage Guide:
   * change ScenePath to path to [your-path-here]/World2.unity
 * Add DontDestroyOnLoad component to:
   * Canvas
-  * EventSystem
   * MinimapCamera (because Canvas/Minimap references it)
 * Save scene, select scene in Project Area, duplicate via ctrl+d
   * rename new scene to 'World2'
