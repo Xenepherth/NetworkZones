@@ -28,7 +28,6 @@ Usage Guide:
   * open it
   * delete:
     * Canvas
-    * EventSystem
     * MinimapCamera
     * NetworkManager
   * select Portal, change scene path to [your-path-here]/World.unity
