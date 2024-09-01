@@ -17,9 +17,6 @@ using Mirror;
 using kcp2k;
 using SQLite;
 using Tymski;
-using UnityEngine.EventSystems;
-using System.Security.Policy;
-using UnityEngine.XR;
 
 [RequireComponent(typeof(NetworkManager))]
 [RequireComponent(typeof(KcpTransport))]
@@ -47,10 +44,6 @@ public class NetworkZone : MonoBehaviour
     // original network port
     ushort originalPort;
 
-    [Header("AliveCheck")]
-    [Range(1, 10)] public float writeInterval = 1;
-    [Range(2, 10)] public float timeoutMultiplier = 3;
-    public float timeoutInterval { get { return writeInterval * timeoutMultiplier; } }
     // command line args ///////////////////////////////////////////////////////
     public int ParseSceneIndexFromArgs()
     {
@@ -93,7 +86,6 @@ public class NetworkZone : MonoBehaviour
 
         originalPort = transport.port;
 
-        SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         if (FindObjectsOfType<NetworkZone>().Length > 1)
@@ -125,10 +117,6 @@ public class NetworkZone : MonoBehaviour
         // only if we are the main scene (if no -scene parameter was passed)
         if (ParseSceneIndexFromArgs() == 0)
         {
-            // write zone online time every few seconds
-            print("[Zones]: main process starts online writer...");
-            InvokeRepeating("WriteOnlineTime", 1, writeInterval);
-
             print("[Zones]: main process spawns siblings...");
 
             // -- Spawn Siblings
@@ -160,9 +148,8 @@ public class NetworkZone : MonoBehaviour
             // spawned on the client anymore after connecting to scene #2 for
             // the second time.
             NetworkClient.Shutdown();
-            GetComponent<NetworkManager>().enabled = false;
-            GetComponent<NetworkManager>().enabled = true;
-
+            NetworkManager.singleton.enabled = false;
+            NetworkManager.singleton.enabled = true;
 
             Transport.active.enabled = false; // don't receive while switching scenes
             print("[Zones]: loading required scene: " + message.scene);
@@ -176,20 +163,19 @@ public class NetworkZone : MonoBehaviour
     }
 
     // on scene loaded /////////////////////////////////////////////////////////
-    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        UnityEngine.Debug.Log("OnSceneLoaded: " + scene.name);
+        UnityEngine.Debug.LogWarning("OnSceneLoaded: " + scene.name);
 
         // server started and loaded the requested scene?
         int index = ParseSceneIndexFromArgs();
 
         // Server
-        if (NetworkServer.active && scenesToSpawn[index].ScenePath == scene.path)
+        if (NetworkServer.active && scenesToSpawn[index] == scene.path)
         {
             // write online time every few seconds and check main zone alive every few seconds
-            print("[Zones]: starting online alive check for zone: " + scene.name);
-            InvokeRepeating("AliveCheck", timeoutInterval, timeoutInterval);
-
+            print("[Zones]: Server is active: " + scene.name);
+            
         }
 
         // Client
@@ -202,21 +188,6 @@ public class NetworkZone : MonoBehaviour
             //manager.onlineScene = scene.name; DO NOT DO THIS! will cause client to reload scene again, causing unet bugs
             manager.StartClient(); // loads new scene automatically
             autoConnectClient = false;
-        }
-    }
-    public void WriteOnlineTime()
-    {
-        Database.singleton.SaveMainZoneOnlineTime();
-    }
-    public void AliveCheck()
-    {
-        double mainZoneOnline = Database.singleton.TimeElapsedSinceMainZoneOnline();
-        print("[Zones]: AliveCheck... " + mainZoneOnline);
-
-        if (mainZoneOnline > timeoutInterval)
-        {
-            print("[Zones]: alive check failed, time to die for: " + SceneManager.GetActiveScene().name);
-            Application.Quit();
         }
     }
 }
@@ -260,9 +231,8 @@ public partial class NetworkManagerMMO
     {
 
 #if !UNITY_EDITOR
-        
+        if (GetComponent<NetworkZone>() != null)
         // spawn instance processes (if any)
-        if(GetComponent<NetworkManager>() != null)
         GetComponent<NetworkZone>().SpawnProcesses();
 #endif
     }
@@ -288,7 +258,7 @@ public partial class NetworkManagerMMO
 // database hooks via addon system /////////////////////////////////////////////
 public partial class Database
 {
-    public class character_scene
+    class character_scene
     {
 
         [PrimaryKey]
@@ -298,22 +268,9 @@ public partial class Database
         [NotNull]
         public string scene { get; set; }
     }
-    public class zones_online
-    {
-        [NotNull]
-        public string online { get; set; }
-
-        public zones_online() { }
-
-        public zones_online(string name, string isOnline)
-        { 
-            online = isOnline;
-        }
-    }
     private void Connect_Zone()
     {
         connection.CreateTable<character_scene>();
-        connection.CreateTable<zones_online>();
     }
 
     // a character is online on any of the servers if the online string is not
@@ -326,7 +283,7 @@ public partial class Database
         if (obj != null)
         {
             string online = (string)obj;
-            if (online != "")
+            if (online != null)
             {
                 DateTime time = DateTime.Parse(online);
                 double elapsedSeconds = (DateTime.UtcNow - time).TotalSeconds;
@@ -345,7 +302,7 @@ public partial class Database
 
     public string GetCharacterScenePath(string characterName)
     {
-        character_scene characterScene = connection.FindWithQuery<character_scene>("SELECT scene FROM character_scene WHERE character=?", characterName);
+        character_scene characterScene = singleton.connection.FindWithQuery<character_scene>("SELECT scene FROM character_scene WHERE character=?", characterName);
         if (characterScene != null)
             return characterScene.scene;
 
@@ -358,32 +315,6 @@ public partial class Database
         {
             character = characterName,
             scene = scene
-        });
-    }
-    public double TimeElapsedSinceMainZoneOnline()
-    {
-        zones_online onlineInfo = connection.FindWithQuery<zones_online>("SELECT online FROM zones_online");
-        if (onlineInfo != null && !string.IsNullOrEmpty(onlineInfo.online))
-        {
-            DateTime time = DateTime.Parse(onlineInfo.online);
-            return (DateTime.UtcNow - time).TotalSeconds;
-        }
-
-        return Mathf.Infinity;
-    }
-
-    // should only be called by main zone
-    public void SaveMainZoneOnlineTime()
-    {
-        // online status:
-        //   '' if offline (if just logging out etc.)
-        //   current time otherwise
-        // -> it uses the ISO 8601 standard format
-        string onlineString = DateTime.UtcNow.ToString("s");
-        connection.Execute("DELETE FROM zones_online");
-        connection.InsertOrReplace(new zones_online
-        {
-            online = onlineString
         });
     }
 }

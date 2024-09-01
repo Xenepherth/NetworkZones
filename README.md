@@ -1,7 +1,9 @@
 # NetworkZones
  Network Zones Addon for uMMORPG 2D Remastered
 
-NetworkZones for uMMORPG by vis2k reworked by Xenepherth
+
+
+NetworkZones for uMMORPG by vis2k
 
 --------------------------------------------------------------------------------
 Usage Guide:
@@ -16,8 +18,6 @@ Usage Guide:
   * enable 'Is Trigger' in the Collider
   * add NetworkZonePortal component to it
   * change ScenePath to path to [your-path-here]/World2.unity
-
-* Do NetworkManagerMMO's Don't Destroy On Load to inactive
 * Add DontDestroyOnLoad component to:
   * Canvas
   * EventSystem
@@ -28,6 +28,7 @@ Usage Guide:
   * open it
   * delete:
     * Canvas
+    * EventSystem
     * MinimapCamera
     * NetworkManager
   * select Portal, change scene path to [your-path-here]/World.unity
