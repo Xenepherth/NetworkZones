@@ -8,16 +8,16 @@ public partial class Player
     public SceneReference startingScene;
     public Player player;
     public Vector3 position;
-
+    
 
     [ServerCallback]
     public void OnPortal(SceneLocation scene)
     {
-
+        
         Database.singleton.CharacterSave(this, false);
         Database.singleton.SaveCharacterScenePath(this.name, scene.mapScene);
 
-        player.transform.position = scene.position;
+        player.transform.position = scene.position;  
 
         // ask client to switch server
         this.connectionToClient.Send(

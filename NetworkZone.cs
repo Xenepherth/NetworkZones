@@ -12,13 +12,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Mirror;
 using kcp2k;
 using SQLite;
 using Tymski;
-using System.Collections;
 
 [RequireComponent(typeof(NetworkManager))]
 [RequireComponent(typeof(KcpTransport))]
@@ -31,9 +29,6 @@ public class NetworkZone : MonoBehaviour
 
     // paths to the scenes to spawn
     public SceneReference[] scenesToSpawn;
-
-    public GameObject LoadingScreen;
-    public Image loadingBarFill;
 
     // write online time to db every 'writeInterval'
     // die if not online for 'writeInterval * timeoutMultiplier'
@@ -154,7 +149,6 @@ public class NetworkZone : MonoBehaviour
         // only on client
         if (!NetworkServer.active)
         {
-            LoadingScreen.SetActive(true);
             print("[Zones]: disconnecting from current server");
             manager.StopClient();
 
@@ -173,7 +167,7 @@ public class NetworkZone : MonoBehaviour
             // load requested scene and make sure to auto connect when it's done
             string scenePath = Path.GetFileNameWithoutExtension(message.scene);
 
-            LoadScene(scenePath);
+            SceneManager.LoadSceneAsync(scenePath);
             autoConnectClient = true;
         }
     }
@@ -222,20 +216,6 @@ public class NetworkZone : MonoBehaviour
             Application.Quit();
         }
     }
-    public void LoadScene(string scenePath)
-    {
-        StartCoroutine(LoadSceneAsync(scenePath));
-    }
-    IEnumerator LoadSceneAsync(string scenePath)
-    {
-        AsyncOperation operation = SceneManager.LoadSceneAsync(scenePath);
-        while (!operation.isDone)
-        {
-            float progressValue = Mathf.Clamp01(operation.progress / 0.9f);
-            loadingBarFill.fillAmount = progressValue;
-            yield return null;
-        }           
-    }
 }
 
 
@@ -253,6 +233,11 @@ public partial class NetworkManagerMMO
     public void OnClientConnect_Zones(NetworkConnection conn)
     {
         NetworkClient.RegisterHandler<SwitchServerMsg>(GetComponent<NetworkZone>().OnClientSwitchServerRequested);
+    }
+
+    public void OnStopClient_Zones(NetworkConnection conn)
+    {
+
     }
 
     public void OnServerCharacterCreate_Zones(CharacterCreateMsg message, Player player)
@@ -273,7 +258,7 @@ public partial class NetworkManagerMMO
             NetworkClient.Ready();
             NetworkClient.Send(new CharacterSelectMsg { index = index });
             GetComponent<NetworkManagerMMO>().ClearPreviews();
-            GetComponent<NetworkZone>().LoadingScreen.SetActive(false);
+
             // clear auto select
             autoSelectCharacter = null;
         }
