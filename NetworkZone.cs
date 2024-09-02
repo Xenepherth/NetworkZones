@@ -238,6 +238,14 @@ public partial class NetworkManagerMMO
         NetworkClient.RegisterHandler<SwitchServerMsg>(GetComponent<NetworkZone>().OnClientSwitchServerRequested);
     }
 
+<<<<<<< Updated upstream
+=======
+    public void OnStopClient_Zones(NetworkConnection conn)
+    {
+
+    }
+
+>>>>>>> Stashed changes
     public void OnServerCharacterCreate_Zones(CharacterCreateMsg message, Player player)
     {
         if (player.startingScene == null) return;
@@ -273,16 +281,20 @@ public partial class NetworkManagerMMO
 #endif
     }
 
-    public void OnServerAddPlayer_Zones(string account, GameObject player, NetworkConnection conn, CharacterSelectMsg message)
+    public void OnServerCharacterSelect_Zones(string account, GameObject player, NetworkConnection conn, CharacterSelectMsg message)
     {
         // where was the player saved the last time?
+<<<<<<< Updated upstream
+=======
+        Database.singleton.AnyAccountCharacterOnline(account);
+>>>>>>> Stashed changes
         string lastScene = Database.singleton.GetCharacterScenePath(player.name);
         if (lastScene != null && lastScene != SceneManager.GetActiveScene().path)
         {
             print("[Zones]: " + player.name + " was last saved on another scene, transferring to: " + lastScene);
 
             // ask client to switch server
-            conn.Send(new SwitchServerMsg{scene=lastScene, characterName=player.name});
+            conn.Send(new SwitchServerMsg { scene = lastScene, characterName = player.name });
 
             // immediately destroy so nothing messes with the new
             // position and so it's not saved again etc.
@@ -327,6 +339,7 @@ public partial class Database
     // (* 2 to have some tolerance)
     public bool IsCharacterOnlineAnywhere(string characterName)
     {
+<<<<<<< Updated upstream
         float saveInterval = ((NetworkManagerMMO)NetworkManager.singleton).saveInterval;
         object obj = connection.FindWithQuery<characters>("SELECT online FROM characters WHERE name=?", characterName);
         if (obj != null)
@@ -339,8 +352,21 @@ public partial class Database
 
                 return elapsedSeconds < saveInterval * 2;
             }
+=======
+        characters character = connection.FindWithQuery<characters>("SELECT online FROM characters WHERE name=?", characterName);
+        if (character == null || !character.online)
+        {
+            return false;
+>>>>>>> Stashed changes
         }
-        return false;
+
+        var lastsaved = character.lastsaved;
+        double elapsedSeconds = (DateTime.UtcNow - lastsaved).TotalSeconds;
+        float saveInterval = ((NetworkManagerMMO)NetworkManager.singleton).saveInterval;
+
+        // online if 1 and last saved recently (it's possible that online is
+        // still 1 after a server crash, hence last saved detection)
+        return elapsedSeconds < saveInterval * 2;
     }
 
     public bool AnyAccountCharacterOnline(string account)
