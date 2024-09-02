@@ -17,7 +17,7 @@ public partial class SceneLocation
     {
         get
         {
-            return mapScene.ScenePath != null;
+            return mapScene.ScenePath != "";
         }
     }
 }
