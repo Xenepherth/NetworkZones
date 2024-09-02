@@ -17,6 +17,9 @@ using Mirror;
 using kcp2k;
 using SQLite;
 using Tymski;
+using UnityEngine.EventSystems;
+using System.Security.Policy;
+using UnityEngine.XR;
 
 [RequireComponent(typeof(NetworkManager))]
 [RequireComponent(typeof(KcpTransport))]
@@ -235,11 +238,14 @@ public partial class NetworkManagerMMO
         NetworkClient.RegisterHandler<SwitchServerMsg>(GetComponent<NetworkZone>().OnClientSwitchServerRequested);
     }
 
+<<<<<<< Updated upstream
+=======
     public void OnStopClient_Zones(NetworkConnection conn)
     {
 
     }
 
+>>>>>>> Stashed changes
     public void OnServerCharacterCreate_Zones(CharacterCreateMsg message, Player player)
     {
         if (player.startingScene == null) return;
@@ -278,7 +284,10 @@ public partial class NetworkManagerMMO
     public void OnServerCharacterSelect_Zones(string account, GameObject player, NetworkConnection conn, CharacterSelectMsg message)
     {
         // where was the player saved the last time?
+<<<<<<< Updated upstream
+=======
         Database.singleton.AnyAccountCharacterOnline(account);
+>>>>>>> Stashed changes
         string lastScene = Database.singleton.GetCharacterScenePath(player.name);
         if (lastScene != null && lastScene != SceneManager.GetActiveScene().path)
         {
@@ -330,10 +339,25 @@ public partial class Database
     // (* 2 to have some tolerance)
     public bool IsCharacterOnlineAnywhere(string characterName)
     {
+<<<<<<< Updated upstream
+        float saveInterval = ((NetworkManagerMMO)NetworkManager.singleton).saveInterval;
+        object obj = connection.FindWithQuery<characters>("SELECT online FROM characters WHERE name=?", characterName);
+        if (obj != null)
+        {
+            string online = (string)obj;
+            if (online != "")
+            {
+                DateTime time = DateTime.Parse(online);
+                double elapsedSeconds = (DateTime.UtcNow - time).TotalSeconds;
+
+                return elapsedSeconds < saveInterval * 2;
+            }
+=======
         characters character = connection.FindWithQuery<characters>("SELECT online FROM characters WHERE name=?", characterName);
         if (character == null || !character.online)
         {
             return false;
+>>>>>>> Stashed changes
         }
 
         var lastsaved = character.lastsaved;
