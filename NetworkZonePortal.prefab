@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3917374305583251627}
   - component: {fileID: 3917374305583251628}
   - component: {fileID: 3917374305583251626}
-  - component: {fileID: 3917374305583251625}
   m_Layer: 0
   m_Name: NetworkZonePortal
   m_TagString: Untagged
@@ -46,20 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fab198f5e20b42d2958803917331163, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  gizmoColor: {r: 0, g: 1, b: 1, a: 0.25}
-  gizmoWireColor: {r: 1, g: 1, b: 1, a: 0.8}
-  database: {fileID: 0}
-  networkZone: {fileID: 0}
-  collider2d: {fileID: 3917374305583251626}
-  portalPosition: {fileID: 0}
-  location:
-    mapScene:
-      sceneAsset: {fileID: 102900000, guid: eac791a1b76841848ab92d5c4778d7ae, type: 3}
-      scenePath: Assets/Scenes/World2.unity
-    position: {fileID: 0}
+  sceneReference:
+    asset: {fileID: 102900000, guid: 2cda990e2423bbf4892e6590ba056729, type: 3}
+    guid: 2cda990e2423bbf4892e6590ba056729
+  position: {x: 0, y: 0, z: 0}
 --- !u!61 &3917374305583251626
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -86,20 +75,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 5, y: 5}
   m_EdgeRadius: 0
---- !u!114 &3917374305583251625
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3917374305583251629}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 347288071
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0

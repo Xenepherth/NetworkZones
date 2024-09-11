@@ -8,11 +8,12 @@ NetworkZones for uMMORPG by vis2k Reworked by Xenepherth
 --------------------------------------------------------------------------------
 Usage Guide:
 --------------------------------------------------------------------------------
+Get Eflatun.SceneReference from https://github.com/starikcetin/Eflatun.SceneReference
 
 * Copy NetworkZones folder into uMMORPG Addons folder
 * Add NetworkZone component to NetworkManager
   * assign the public components by dragging networkmanager's components into it
-  * add [your-path-here]/World2.unity to scene paths to spawn
+  * add World2.unity to scene reference to spawn
 * Add NetworkZonePortal component to your Scene for teleport
 * In NetworkManagerMMO do inactive Don't Destroy On Load
 * Add DontDestroyOnLoad component to:
@@ -27,7 +28,7 @@ Usage Guide:
     * Canvas
     * MinimapCamera
     * NetworkManager
-  * select Portal, change scene path to [your-path-here]/World.unity
+  * select Portal, change scene reference to World
 
 test it:
 * press build and run
