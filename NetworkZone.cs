@@ -7,7 +7,6 @@
 // already. Instead we always load the scene manually, then connect to the
 // server afterwards.
 using System;
-using System.IO;
 using System.Diagnostics;
 using System.Linq;
 using System.Collections.Generic;
@@ -19,7 +18,6 @@ using kcp2k;
 using SQLite;
 using System.Collections;
 using Eflatun.SceneReference;
-using UnityEngine.Assertions.Must;
 
 [RequireComponent(typeof(NetworkManager))]
 [RequireComponent(typeof(KcpTransport))]
